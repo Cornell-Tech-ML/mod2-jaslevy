@@ -285,3 +285,123 @@ class Tensor:
 
     # Functions
     # TODO: Implement for Task 2.3.
+    @property
+    def size(self) -> int:
+            """Return the total number of elements in the tensor."""
+            return int(operators.prod(self.shape))
+    
+    def dims(self) -> int:
+        """Return the number of dimensions of the tensor."""
+        return len(self.shape)
+    
+    def __add__(self, b: TensorLike) -> Tensor:
+        """Element-wise addition."""
+        b = self._ensure_tensor(b)
+        return Add.apply(self, b)
+    
+    def __radd__(self, b: TensorLike) -> Tensor:
+        """Element-wise addition (right operand)."""
+        return self.__add__(b)
+    
+    def __sub__(self, b: TensorLike) -> Tensor:
+        """Element-wise subtraction."""
+        b = self._ensure_tensor(b)
+        return Add.apply(self, Neg.apply(b))
+
+    def __mul__(self, b: TensorLike) -> Tensor:
+        """Element-wise multiplication."""
+        b = self._ensure_tensor(b)
+        return Mul.apply(self, b)
+    
+    def __rmul__(self, b: TensorLike) -> Tensor:
+        """Element-wise multiplication (right operand)."""
+        return self.__mul__(b)
+
+    def __neg__(self) -> Tensor:
+        """Negate the tensor."""
+        return Neg.apply(self)
+    
+    def __eq__(self, b: TensorLike) -> Tensor:
+        """Element-wise equality comparison."""
+        b = self._ensure_tensor(b)
+        return EQ.apply(self, b)
+    
+    def __lt__(self, b: TensorLike) -> Tensor:
+        """Element-wise less-than comparison."""
+        b = self._ensure_tensor(b)
+        return LT.apply(self, b)
+    
+    def __gt__(self, b: TensorLike) -> Tensor:
+        """Element-wise greater-than comparison."""
+        b = self._ensure_tensor(b)
+        return LT.apply(b, self)
+    
+    def all(self, dim: Optional[int] = None) -> Tensor:
+        """Check if all elements are non-zero."""
+        if dim is None:
+            # Reshape to a 1D tensor and reduce over all elements
+            flat_tensor = self.contiguous().view(self.size)
+            return All.apply(flat_tensor, Tensor.make([0], (1,), backend=self.backend))
+        else:
+            # Reduce over the specified dimension
+            return All.apply(self, Tensor.make([dim], (1,), backend=self.backend))
+
+    def abs(self) -> Tensor:
+        """Element-wise absolute value."""
+        return self.relu() + (-self).relu()
+    def is_close(self, b: TensorLike, tol: float = 1e-5) -> Tensor:
+        """Element-wise comparison for closeness within a tolerance."""
+        b = self._ensure_tensor(b)
+        diff = (self - b).abs()  # Use the subtraction operator directly
+        tol_tensor = Tensor.make([tol], (1,), backend=self.backend)
+        return LT.apply(diff, tol_tensor)
+        
+    def sigmoid(self) -> Tensor:
+        """Sigmoid activation function."""
+        return Sigmoid.apply(self)
+
+    def relu(self) -> Tensor:
+            """ReLU activation function."""
+            return ReLU.apply(self)
+    
+    def log(self) -> Tensor:
+        """Natural logarithm."""
+        return Log.apply(self)
+    
+    def exp(self) -> Tensor:
+        """Exponential function."""
+        return Exp.apply(self)
+    
+    def sum(self, dim: Optional[int] = None) -> Tensor:
+        """Sum over a specified dimension or all elements."""
+        if dim is None:
+            # Flatten the tensor to 1D and sum over all elements
+            flat_tensor = self.contiguous().view(self.size)
+            dim_tensor = Tensor.make([0], (1,), backend=self.backend)
+            return Sum.apply(flat_tensor, dim_tensor)
+        else:
+            # Convert the dimension to a Tensor
+            dim_tensor = Tensor.make([dim], (1,), backend=self.backend)
+            return Sum.apply(self, dim_tensor)
+
+
+    def mean(self, dim: Optional[int] = None) -> Tensor:
+        """Mean over a specified dimension or all elements."""
+        total = self.sum(dim)
+        if dim is None:
+            return total / float(self.size)  # Explicitly convert to float
+        return total / float(self.shape[dim])  # Explicitly convert to float
+
+    def permute(self, *order: int) -> Tensor:
+        """Permute the dimensions of the tensor."""
+        order_tensor = Tensor.make(list(order), (len(order),), backend=self.backend)
+        return Permute.apply(self, order_tensor)
+
+    def view(self, *shape: int) -> Tensor:
+        """Return a tensor with the specified shape."""
+        shape_tensor = Tensor.make(list(shape), (len(shape),), backend=self.backend)
+        return View.apply(self, shape_tensor)
+
+    def zero_grad_(self) -> None:
+        """Set the gradient to None."""
+        self.grad = None

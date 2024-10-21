@@ -107,6 +107,77 @@ class All(Function):
 
 # TODO: Implement for Task 2.3.
 
+class Mul(Function):
+    @staticmethod
+    def forward(ctx: Context, t1: Tensor, t2: Tensor) -> Tensor:
+        """Element-wise multiplication."""
+        return t1.f.mul_zip(t1, t2)
+
+class Sigmoid(Function):
+    @staticmethod
+    def forward(ctx: Context, t1: Tensor) -> Tensor:
+        """Sigmoid activation function."""
+        out = t1.f.sigmoid_map(t1)
+        ctx.save_for_backward(out)
+        return out
+    
+class ReLU(Function):
+    @staticmethod
+    def forward(ctx: Context, t1: Tensor) -> Tensor:
+        """ReLU activation function."""
+        return t1.f.relu_map(t1)
+
+class Log(Function):
+    @staticmethod
+    def forward(ctx: Context, t1: Tensor) -> Tensor:
+        """Logarithm function."""
+        ctx.save_for_backward(t1)
+        return t1.f.log_map(t1)
+
+class Exp(Function):
+    @staticmethod
+    def forward(ctx: Context, t1: Tensor) -> Tensor:
+        """Exponential function."""
+        out = t1.f.exp_map(t1)
+        ctx.save_for_backward(out)
+        return out
+
+
+class Sum(Function):
+    @staticmethod
+    def forward(ctx: Context, t1: Tensor, dim_tensor: Tensor) -> Tensor:
+        """Sum over a dimension."""
+        # Convert dim_tensor to an integer
+        dim = int(dim_tensor.item())
+        ctx.save_for_backward(t1.shape, dim)
+        # Call the appropriate backend function
+        return t1.f.add_reduce(t1, dim)
+    
+class LT(Function):
+    @staticmethod
+    def forward(ctx: Context, t1: Tensor, t2: Tensor) -> Tensor:
+        """Element-wise less-than comparison."""
+        return t1.f.lt_zip(t1, t2)
+
+class EQ(Function):
+    @staticmethod
+    def forward(ctx: Context, t1: Tensor, t2: Tensor) -> Tensor:
+        """Element-wise equality comparison."""
+        return t1.f.eq_zip(t1, t2)
+
+class IsClose(Function):
+    @staticmethod
+    def forward(ctx: Context, t1: Tensor, t2: Tensor) -> Tensor:
+        """Element-wise is-close comparison."""
+        return t1.f.is_close_zip(t1, t2)
+    
+class Permute(Function):
+    @staticmethod
+    def forward(ctx: Context, t1: Tensor, order: Tensor) -> Tensor:
+        """Permute tensor dimensions."""
+        order_list = [int(order[i]) for i in range(order.size)]
+        ctx.save_for_backward(order_list)
+        return t1._new(t1._tensor.permute(*order_list))
 
 class View(Function):
     @staticmethod
