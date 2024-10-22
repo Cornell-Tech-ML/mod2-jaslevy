@@ -390,7 +390,7 @@ class Tensor:
         total = self.sum(dim)
         if dim is None:
             return total / float(self.size)  # Explicitly convert to float
-        return total / float(self.shape[dim])  # Explicitly convert to float
+        return total / int(self.shape[dim])  # Explicitly convert to float
 
     def permute(self, *order: int) -> Tensor:
         """Permute the dimensions of the tensor."""
