@@ -8,7 +8,7 @@ version = "0.5"
 
 [tool.pyright]
 include = ["**/minitorch"]
-lint.ignore = [
+ignore = [
     "**/docs",
     "**/docs/module1/**",
     "**/assignments",
@@ -90,6 +90,9 @@ lint.ignore = [
     "D105",
     "D415",
     "D402",
+    "D102",
+    "D104",
+    "D203",
     "D205",
     "D100",
     "D101",
