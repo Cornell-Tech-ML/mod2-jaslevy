@@ -11,7 +11,7 @@
 <img width="632" alt="mod2_simple" src="https://github.com/user-attachments/assets/819b86ff-0827-424c-9442-67a16cd0c1b9">
 <img width="661" alt="Mod2_simple_loss" src="https://github.com/user-attachments/assets/8bd7ff67-3aae-45f4-a1a7-a3082345ad3e">
 
-## Diag 
+## Diag
 
 #### hidden layer of size 2
 #### 50 points
@@ -19,7 +19,7 @@
 <img width="641" alt="mod2_diag" src="https://github.com/user-attachments/assets/9e67a316-49cc-4f0b-b892-e165d296086f">
 <img width="645" alt="mod2_diag_loss" src="https://github.com/user-attachments/assets/5a1bfe82-99f8-4591-b178-b71b9c9b61aa">
 
-## Split 
+## Split
 
 #### hidden layer of size 6
 #### 71 points
